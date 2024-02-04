@@ -13,7 +13,7 @@ import diffmimic.brax_lib.agent_diffmimic as dmm
 register_mimic_env()
 
 FLAGS = flags.FLAGS
-flags.DEFINE_string('config', 'configs/AMP/backflip.yaml', help='Experiment configuration.')
+flags.DEFINE_string('config', 'configs/A1/trot.yaml', help='Experiment configuration.')
 
 
 def main(argv):
@@ -34,7 +34,7 @@ def main(argv):
     args.ep_len_eval = min(args.get('ep_len_eval', demo_len), demo_len)
 
     train_env = envs.get_environment(
-        env_name="humanoid_mimic_train",
+        env_name="a1_mimic_train",
         system_config=args.system_config,
         reference_traj=demo_traj,
         obs_type=args.get('obs_type', 'timestamp'),
@@ -52,7 +52,7 @@ def main(argv):
     )
 
     eval_env = envs.get_environment(
-        env_name="humanoid_mimic",
+        env_name="a1_mimic",
         system_config=args.system_config,
         reference_traj=demo_traj,
         obs_type=args.get('obs_type', 'timestamp'),

@@ -7,8 +7,8 @@ from .losses import *
 from diffmimic.utils.rotation6d import quaternion_to_rotation_6d
 
 
-class HumanoidMimic(env.Env):
-    """Trains a humanoid to mimic reference motion."""
+class A1Mimic(env.Env):
+    """Trains an A1 to mimic reference motion."""
 
     def __init__(self, system_config, reference_traj, obs_type='timestamp', cyc_len=None, reward_scaling=1.,
                  rot_weight=1., vel_weight=0., ang_weight=0.):
@@ -42,9 +42,9 @@ class HumanoidMimic(env.Env):
                        self.vel_weight * mse_vel(qp, ref_qp) +
                        self.ang_weight * mse_ang(qp, ref_qp)
                        ) * self.reward_scaling
-        # fall: below 0.2 or above 1.7
-        fall = jp.where(qp.pos[0, 2] < 0.2, jp.float32(1), jp.float32(0))
-        fall = jp.where(qp.pos[0, 2] > 1.7, jp.float32(1), fall)
+        # TODO: fall: below 0.05 or above 1
+        fall = jp.where(qp.pos[0, 2] < 0.05, jp.float32(1), jp.float32(0))
+        fall = jp.where(qp.pos[0, 2] > 1, jp.float32(1), fall)
         state.metrics.update(
             step_index=step_index,
             pose_error=loss_l2_relpos(qp, ref_qp),
@@ -54,7 +54,7 @@ class HumanoidMimic(env.Env):
         return state
 
     def _get_obs(self, qp: brax.QP, step_index: jp.ndarray) -> jp.ndarray:
-        """Observe humanoid body position, velocities, and angles."""
+        """Observe a1 body position, velocities, and angles."""
         pos, rot, vel, ang = qp.pos[:-1], qp.rot[:-1], qp.vel[:-1], qp.ang[:-1]  # Remove floor
         rot_6d = quaternion_to_rotation_6d(rot)
         rel_pos = (pos - pos[0])[1:]
