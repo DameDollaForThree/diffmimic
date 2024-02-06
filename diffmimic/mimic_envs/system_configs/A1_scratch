@@ -222,7 +222,7 @@ joints {
   parent_offset { x: 0.183 y: -0.047 }
   parent: "trunk"
   child: "FR_hip"
-  angular_damping: 10.0
+  angular_damping: 0.0
 }
 joints {
   name: "FR_hip_FR_upper"
@@ -231,7 +231,7 @@ joints {
   parent_offset { y: -0.08505 }
   parent: "FR_hip"
   child: "FR_upper"
-  angular_damping: 10.0
+  angular_damping: 0.0
 }
 joints {
   name: "FR_upper_FR_lower"
@@ -240,7 +240,7 @@ joints {
   parent_offset { z: -0.2 }
   parent: "FR_upper"
   child: "FR_lower"
-  angular_damping: 10.0
+  angular_damping: 0.0
 }
 joints {
   name: "trunk_FL_hip"
@@ -248,7 +248,7 @@ joints {
   parent_offset { x: 0.183 y: 0.047 }
   parent: "trunk"
   child: "FL_hip"
-  angular_damping: 10.0
+  angular_damping: 0.0
 }
 joints {
   name: "FL_hip_FL_upper"
@@ -257,7 +257,7 @@ joints {
   parent_offset { y: 0.08505 }
   parent: "FL_hip"
   child: "FL_upper"
-  angular_damping: 10.0
+  angular_damping: 0.0
 }
 joints {
   name: "FL_upper_FL_lower"
@@ -266,7 +266,7 @@ joints {
   parent_offset { z: -0.2 }
   parent: "FL_upper"
   child: "FL_lower"
-  angular_damping: 10.0
+  angular_damping: 0.0
 }
 joints {
   name: "trunk_RR_hip"
@@ -274,7 +274,7 @@ joints {
   parent_offset { x: -0.183 y: -0.047 }
   parent: "trunk"
   child: "RR_hip"
-  angular_damping: 10.0
+  angular_damping: 0.0
 }
 joints {
   name: "RR_hip_RR_upper"
@@ -283,7 +283,7 @@ joints {
   parent_offset { y: -0.08505 }
   parent: "RR_hip"
   child: "RR_upper"
-  angular_damping: 10.0
+  angular_damping: 0.0
 }
 joints {
   name: "RR_upper_RR_lower"
@@ -292,7 +292,7 @@ joints {
   parent_offset {z: -0.2 }
   parent: "RR_upper"
   child: "RR_lower"
-  angular_damping: 10.0
+  angular_damping: 0.0
 }
 joints {
   name: "trunk_RL_hip"
@@ -300,7 +300,7 @@ joints {
   parent_offset { x: -0.183 y: 0.047 }
   parent: "trunk"
   child: "RL_hip"
-  angular_damping: 10.0
+  angular_damping: 0.0
 }
 joints {
   name: "RL_hip_RL_upper"
@@ -309,7 +309,7 @@ joints {
   parent_offset { y: 0.08505 }
   parent: "RL_hip"
   child: "RL_upper"
-  angular_damping: 10.0
+  angular_damping: 0.0
 }
 joints {
   name: "RL_upper_RL_lower"
@@ -318,7 +318,7 @@ joints {
   parent_offset { z: -0.2 }
   parent: "RL_upper"
   child: "RL_lower"
-  angular_damping: 10.0
+  angular_damping: 0.0
 }
 actuators {
   name: "trunk_FR_hip"
