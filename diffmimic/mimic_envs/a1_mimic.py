@@ -11,14 +11,13 @@ class A1Mimic(base.PipelineEnv):
     """Trains an A1 to mimic reference motion."""
 
     def __init__(self, reference_traj, obs_type='timestamp', cyc_len=None, reward_scaling=1.,
-                 rot_weight=1., vel_weight=0., ang_weight=0.):
+                 rot_weight=1., vel_weight=0., ang_weight=0., n_frames=5):
         path = '/data/benny_cai/diffmimic/diffmimic/mimic_envs/system_configs'
         with open(path + '/a1_mjcf.txt', 'r') as file:
             config = file.read()
         self.sys = mjcf.loads(config, asset_path=path)
-        self.sys = self.sys.replace(dt=0.02) # TODO: try different dt
+        # self.sys = self.sys.replace(dt=0.02)
         backend = 'positional'
-        n_frames = 5
         super().__init__(sys=self.sys, backend=backend, n_frames=n_frames)
         self.reference_qp = deserialize_qp(reference_traj)
         self.reference_len = reference_traj.shape[0]

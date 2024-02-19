@@ -47,7 +47,8 @@ def main(argv):
         reward_scaling=args.get('reward_scaling', 1.),
         rot_weight=args.rot_weight,
         vel_weight=args.vel_weight,
-        ang_weight=args.ang_weight
+        ang_weight=args.ang_weight,
+        n_frames=args.n_frames
     )
 
     eval_env = envs.get_environment(
@@ -57,7 +58,8 @@ def main(argv):
         cyc_len=args.cycle_len,
         rot_weight=args.rot_weight,
         vel_weight=args.vel_weight,
-        ang_weight=args.ang_weight
+        ang_weight=args.ang_weight,
+        n_frames=args.n_frames
     )
 
     with metrics.Writer(logdir) as writer:
