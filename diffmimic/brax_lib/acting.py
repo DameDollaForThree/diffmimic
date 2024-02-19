@@ -34,12 +34,12 @@ def actor_step(
     policy: Policy,
     key: PRNGKey,
     extra_fields: Sequence[str] = ()
-) -> Tuple[envs.State, brax.QP]:
+) -> Tuple[envs.State, brax.positional.base.State]:
   """Collect data."""
   actions, policy_extras = policy(env_state.obs, key)
   nstate = env.step(env_state, actions)
   state_extras = {x: nstate.info[x] for x in extra_fields}
-  return nstate, env_state.qp
+  return nstate, env_state.pipeline_state
 
 
 def generate_unroll(
@@ -86,10 +86,10 @@ class Evaluator:
     self._key = key
     self._eval_walltime = 0.
 
-    eval_env = envs.wrappers.EvalWrapper(eval_env)
+    eval_env = envs.wrappers.training.EvalWrapper(eval_env)
 
     def generate_eval_unroll(policy_params: PolicyParams,
-                             key: PRNGKey) -> (envs.State, brax.QP):
+                             key: PRNGKey) -> (envs.State, brax.positional.base.State):
       reset_keys = jax.random.split(key, num_eval_envs)
       eval_first_state = eval_env.reset(reset_keys)
       return generate_unroll(

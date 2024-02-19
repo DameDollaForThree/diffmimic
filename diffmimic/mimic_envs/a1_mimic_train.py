@@ -1,5 +1,5 @@
-from brax import jumpy as jp
-from brax.envs import env
+from brax.v1 import jumpy as jp
+from brax.envs import base
 from .a1_mimic import A1Mimic
 from .losses import *
 import jax
@@ -18,13 +18,13 @@ class A1MimicTrain(A1Mimic):
         self.err_threshold = err_threshold
         self.replay_rate = replay_rate
 
-    def reset(self, rng: jp.ndarray) -> env.State:
+    def reset(self, rng: jp.ndarray) -> base.State:
         reward, done, zero = jp.zeros(3)
         step_index = jp.randint(rng, high=self.total_length-self.rollout_length+1)   # random state initialization (RSI)
         qp = self._get_ref_state(step_index)
         metrics = {'step_index': step_index, 'pose_error': zero, 'fall': zero}
         obs = self._get_obs(qp, step_index=step_index)
-        state = env.State(qp, obs, reward, done, metrics)
+        state = base.State(qp, obs, reward, done, metrics)
         if self.demo_replay_mode != 'none':
             state.metrics.update(replay=jp.zeros(1)[0])
         if self.demo_replay_mode == 'random':
@@ -32,7 +32,7 @@ class A1MimicTrain(A1Mimic):
             state.metrics.update(replay_key=rng)
         return state
 
-    def step(self, state: env.State, action: jp.ndarray) -> env.State:
+    def step(self, state: base.State, action: jp.ndarray) -> base.State:
         state = super(A1MimicTrain, self).step(state, action)
         if self.early_termination:
             state = state.replace(done=state.metrics['fall'])
@@ -40,8 +40,8 @@ class A1MimicTrain(A1Mimic):
             state = self._demo_replay(state)
         return state
 
-    def _demo_replay(self, state) -> env.State:
-        qp = state.qp
+    def _demo_replay(self, state) -> base.State:
+        qp = state.pipeline_state
         ref_qp = self._get_ref_state(state.metrics['step_index'])
         if self.demo_replay_mode == 'threshold':
             error = loss_l2_pos(qp, ref_qp)
@@ -56,4 +56,4 @@ class A1MimicTrain(A1Mimic):
         qp = jp.tree_map(lambda x: x*(1 - replay), qp) + jp.tree_map(lambda x: x*replay, ref_qp)
         obs = self._get_obs(qp, state.metrics['step_index'])
         state.metrics.update(replay=replay)
-        return state.replace(qp=qp, obs=obs)
+        return state.replace(pipeline_state=qp, obs=obs)

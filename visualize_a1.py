@@ -22,17 +22,12 @@ def show_rollout_traj(rollout_traj, tag):
     if len(rollout_traj.shape) == 3:
         seed = st.slider(f'Random seed ({tag})', 0, rollout_traj.shape[1] - 1, 0)
         rollout_traj = rollout_traj[:, seed]
-    if rollout_traj.shape[-1] == 182:
-        system_cfg = 'a1'
-    else:
-        system_cfg = 'go1'
 
     rollout_qp = [deserialize_qp(rollout_traj[i]) for i in range(rollout_traj.shape[0])]
-    rollout_traj = serialize_qp(deserialize_qp(rollout_traj))
-
+    # rollout_traj = serialize_qp(deserialize_qp(rollout_traj))
+    
     env = envs.get_environment(
         env_name="a1_mimic",
-        system_config=system_cfg,
         reference_traj=rollout_traj,
     )
     components.html(html.render(env.sys, rollout_qp), height=500)

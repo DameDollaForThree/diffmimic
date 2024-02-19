@@ -1,5 +1,5 @@
 optax
 chex
 flax
-brax=0.9.4
+brax==0.9.4
 streamlit

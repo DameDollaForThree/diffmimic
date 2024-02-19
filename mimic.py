@@ -35,7 +35,6 @@ def main(argv):
 
     train_env = envs.get_environment(
         env_name="a1_mimic_train",
-        system_config=args.system_config,
         reference_traj=demo_traj,
         obs_type=args.get('obs_type', 'timestamp'),
         cyc_len=args.cycle_len,
@@ -53,7 +52,6 @@ def main(argv):
 
     eval_env = envs.get_environment(
         env_name="a1_mimic",
-        system_config=args.system_config,
         reference_traj=demo_traj,
         obs_type=args.get('obs_type', 'timestamp'),
         cyc_len=args.cycle_len,

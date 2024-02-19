@@ -100,9 +100,9 @@ def train(environment: envs.Env,
 
   assert num_envs % device_count == 0
   env = environment
-  env = wrappers.EpisodeWrapper(env, episode_length, action_repeat)
-  env = wrappers.VmapWrapper(env)
-  env = wrappers.AutoResetWrapper(env)
+  env = wrappers.training.EpisodeWrapper(env, episode_length, action_repeat)
+  env = wrappers.training.VmapWrapper(env)
+  env = wrappers.training.AutoResetWrapper(env)
 
   normalize = lambda x, y: x
   if normalize_observations:
@@ -224,9 +224,9 @@ def train(environment: envs.Env,
       eval_env = env
   else:
       eval_env = eval_environment
-      eval_env = wrappers.EpisodeWrapper(eval_env, eval_episode_length, action_repeat)
-      eval_env = wrappers.VmapWrapper(eval_env)
-      eval_env = wrappers.AutoResetWrapper(eval_env)
+      eval_env = wrappers.training.EpisodeWrapper(eval_env, eval_episode_length, action_repeat)
+      eval_env = wrappers.training.VmapWrapper(eval_env)
+      eval_env = wrappers.training.AutoResetWrapper(eval_env)
   evaluator = acting.Evaluator(
       eval_env,
       functools.partial(make_policy, deterministic=deterministic_eval),
