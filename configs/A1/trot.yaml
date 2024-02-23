@@ -1,11 +1,11 @@
-num_envs: 300
+num_envs: 32
 num_eval_envs: 32
 lr: 0.0003
-max_it: 100
+max_it: 1000
 max_grad_norm: 0.4
 seed: 0
 demo_replay_mode: threshold
-threshold: 0.4
+threshold: 0.04
 normalize_observations: True
 cycle_len: 54
 ep_len: 60
@@ -15,6 +15,6 @@ reward_scaling: 0.02
 rot_weight: 0.5
 vel_weight: 0.01
 ang_weight: 0.01
-n_frames: 5
+n_frames: 10
 
 ref: data/demo_a1/trot.npy

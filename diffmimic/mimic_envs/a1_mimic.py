@@ -16,7 +16,6 @@ class A1Mimic(base.PipelineEnv):
         with open(path + '/a1_mjcf.txt', 'r') as file:
             config = file.read()
         self.sys = mjcf.loads(config, asset_path=path)
-        # self.sys = self.sys.replace(dt=0.02)
         backend = 'positional'
         super().__init__(sys=self.sys, backend=backend, n_frames=n_frames)
         self.reference_qp = deserialize_qp(reference_traj)
@@ -48,8 +47,8 @@ class A1Mimic(base.PipelineEnv):
                        self.vel_weight * mse_vel(qp, ref_qp) +
                        self.ang_weight * mse_ang(qp, ref_qp)
                        ) * self.reward_scaling
-        # TODO: fall: below 0.05 or above 1
-        fall = jp.where(qp.x_i.pos[0, 2] < 0.05, jp.float32(1), jp.float32(0))
+        # TODO: fall: below 0.3 or above 1
+        fall = jp.where(qp.x_i.pos[0, 2] < 0.3, jp.float32(1), jp.float32(0))
         fall = jp.where(qp.x_i.pos[0, 2] > 1, jp.float32(1), fall)
         state.metrics.update(
             step_index=step_index,
