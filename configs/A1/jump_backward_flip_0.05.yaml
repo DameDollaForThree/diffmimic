@@ -17,4 +17,4 @@ vel_weight: 0.01
 ang_weight: 0.01
 n_frames: 25
 
-ref: data/demo_a1/trot.npy
+ref: data/demo_a1/jump_backward_flip_0.05.npy
