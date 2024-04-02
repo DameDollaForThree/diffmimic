@@ -9,7 +9,7 @@ from scipy.spatial.transform import Slerp
 
 
 if __name__ == "__main__":
-    motion = "walk03"
+    motion = "jump08"
     file = f'a1_origin_motions/{motion}.txt'
     with open(file, 'r') as f:
         data = json.load(f)
@@ -17,21 +17,10 @@ if __name__ == "__main__":
     frames = np.array(frames)
     frameDuration = data['FrameDuration']
     loopMode = data['LoopMode']
+    print("Motion: ", motion)
     print("Original shape: ", frames.shape)
     
-    total_length = frames.shape[0] * frameDuration
     targetDuration = 0.05
-    quaternions = []
-    for frame in frames:
-        quat = frame[3:7]
-        quat = [quat[3], quat[0], quat[1], quat[2]]
-        quaternions.append(quat)
-    key_rots = R.from_quat(np.array(quaternions))
-    key_times = frameDuration * np.arange(frames.shape[0])
-    slerp = Slerp(key_times, key_rots)
-    times = targetDuration * np.arange(total_length // targetDuration)
-    interp_rots = slerp(times)
-    
     interpolated_idx = 0
     interp_frames = []
     for i in range(frames.shape[0]-1):
@@ -43,16 +32,24 @@ if __name__ == "__main__":
 
             root_pos0 = frame0[0:3]
             root_pos1 = frame1[0:3]
+            root_rot0 = frame0[3:7]
+            root_rot1 = frame1[3:7]
             joints0 = frame0[7:19]
             joints1 = frame1[7:19]
 
+            quats = [root_rot0, root_rot1]
+            quats = [[quat[3], quat[0], quat[1], quat[2]] for quat in quats]
+            key_rots = R.from_quat(quats)
+            key_times = [frameDuration * i, frameDuration * (i+1)]
+            slerp = Slerp(key_times, key_rots)
+            time = interpolated_idx * targetDuration
+            interp_rots = slerp(time)
+            
             blend_root_pos = (1.0 - blend) * root_pos0 + blend * root_pos1
             blend_joints = (1.0 - blend) * joints0 + blend * joints1
-            interp_frames.append(np.hstack((blend_root_pos, blend_joints)))
+            interp_frames.append(np.hstack((blend_root_pos, interp_rots.as_quat(), blend_joints)))
             interpolated_idx += 1
-    
     interp_frames = np.array(interp_frames)
-    interp_frames = np.hstack((interp_frames[:,:3], interp_rots.as_quat(), interp_frames[:,3:]))
     print("Interpolated shape: ", interp_frames.shape)
     
     with open('a1_mjcf.txt', 'r') as file:
