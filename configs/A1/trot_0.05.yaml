@@ -5,10 +5,10 @@ max_it: 1000
 max_grad_norm: 0.4
 seed: 0
 demo_replay_mode: random
-threshold: 0.04
+threshold: 0.4
 normalize_observations: True
 cycle_len: 54
-ep_len: 54
+ep_len: 30
 ep_len_eval: 54
 use_lr_scheduler: True
 reward_scaling: 0.02
