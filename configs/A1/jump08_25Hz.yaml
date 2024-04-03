@@ -5,16 +5,16 @@ max_it: 1000
 max_grad_norm: 0.4
 seed: 0
 demo_replay_mode: threshold
-threshold: 0.4
+threshold: 0.5
 normalize_observations: True
-cycle_len: 14 # 115/8
+cycle_len: 30 # (219/8)
 ep_len: 30
-ep_len_eval: 60
+ep_len_eval: 40
 use_lr_scheduler: True
 reward_scaling: 0.02
 rot_weight: 0.5
 vel_weight: 0.01
 ang_weight: 0.01
-n_frames: 25
+n_frames: 20 # 0.04
 
-ref: data/demo_a1/walk03_0.05.npy # (115, 739)
+ref: data/demo_a1/jump08_25Hz.npy # (219, 739)

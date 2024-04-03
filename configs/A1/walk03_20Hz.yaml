@@ -1,4 +1,4 @@
-num_envs: 128
+num_envs: 64
 num_eval_envs: 32
 lr: 0.0003
 max_it: 1000
@@ -7,9 +7,9 @@ seed: 0
 demo_replay_mode: threshold
 threshold: 0.4
 normalize_observations: True
-cycle_len: 54
-ep_len: 25
-ep_len_eval: 54
+cycle_len: 14 # 115/8
+ep_len: 30
+ep_len_eval: 60
 use_lr_scheduler: True
 reward_scaling: 0.02
 rot_weight: 0.5
@@ -17,4 +17,4 @@ vel_weight: 0.01
 ang_weight: 0.01
 n_frames: 25
 
-ref: data/demo_a1/jump_backward_flip_0.05.npy
+ref: data/demo_a1/walk03_20Hz.npy # (115, 739)

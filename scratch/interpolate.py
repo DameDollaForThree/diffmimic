@@ -95,4 +95,4 @@ if __name__ == "__main__":
         
     data = np.array(data)
     print("data shape: ", data.shape)
-    np.save(f'a1_ref_motion/{motion}_{targetDuration}.npy', data)
+    np.save(f'a1_ref_motion/{motion}_{int(1/targetDuration)}Hz.npy', data)
