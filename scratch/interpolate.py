@@ -20,7 +20,8 @@ if __name__ == "__main__":
     print("Motion: ", motion)
     print("Original shape: ", frames.shape)
     
-    targetDuration = 0.05
+    targetDuration = 0.04
+    print("targetDuration: ", targetDuration)
     interpolated_idx = 0
     interp_frames = []
     for i in range(frames.shape[0]-1):
