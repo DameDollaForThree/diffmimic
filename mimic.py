@@ -74,7 +74,7 @@ def main(argv):
             learning_rate=args.lr,
             num_evals=args.max_it+1,
             max_gradient_norm=args.max_grad_norm,
-            network_factory=functools.partial(apg_networks.make_apg_networks, hidden_layer_sizes=(512, 512, 256)),
+            network_factory=functools.partial(apg_networks.make_apg_networks, hidden_layer_sizes=(512, 256)),
             normalize_observations=args.normalize_observations,
             save_dir=logdir,
             progress_fn=writer.write_scalars,
