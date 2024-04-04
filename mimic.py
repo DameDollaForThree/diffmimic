@@ -20,7 +20,7 @@ def main(argv):
     with open(FLAGS.config, 'r') as f:
         args = AttrDict(yaml.safe_load(f))
 
-    logdir = "logs/exp"
+    logdir = "A1_logs/exp"
     for k, v in args.items():
         if k == 'ref':
             logdir += f"_{v.split('/')[-1].split('.')[0]}"
