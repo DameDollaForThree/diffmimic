@@ -54,10 +54,10 @@ def main():
 
     with tab_experiment_log:
         try:
-            exp_name = st.selectbox('Experiment name', tuple(os.listdir('logs')))
-            all_files = sorted([x for x in os.listdir(os.path.join('logs', exp_name)) if x.endswith(".npy")])
+            exp_name = st.selectbox('Experiment name', tuple(os.listdir('humanoid_logs')))
+            all_files = sorted([x for x in os.listdir(os.path.join('humanoid_logs', exp_name)) if x.endswith(".npy")])
             file_name = st.selectbox('File name', tuple(all_files), index=len(all_files)-1)
-            with open(os.path.join('logs', exp_name, file_name), 'rb') as f:
+            with open(os.path.join('humanoid_logs', exp_name, file_name), 'rb') as f:
                 rollout_traj = np.load(f)
                 show_rollout_traj(rollout_traj, 'EL')
         except:
