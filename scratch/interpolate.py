@@ -6,10 +6,11 @@ from brax.positional import pipeline
 from brax.io import mjcf
 from scipy.spatial.transform import Rotation as R
 from scipy.spatial.transform import Slerp
+import transforms3d.quaternions as quat
 
 
 if __name__ == "__main__":
-    motion = "jump08"
+    motion = "jump_backward_flip"
     file = f'a1_origin_motions/{motion}.txt'
     with open(file, 'r') as f:
         data = json.load(f)
@@ -20,14 +21,50 @@ if __name__ == "__main__":
     print("Motion: ", motion)
     print("Original shape: ", frames.shape)
     
-    targetDuration = 0.04
+    # compute frame velocities
+    num_frames = frames.shape[0]
+    dt = frameDuration
+    frames_vels = []
+
+    for i in range(frames.shape[0]-1):
+        frame0, frame1 = frames[i], frames[i+1]
+
+        root_pos0 = frame0[0:3]
+        root_pos1 = frame1[0:3]
+        root_rot0 = frame0[3:7]
+        root_rot1 = frame1[3:7]
+        joints0 = frame0[7:19]
+        joints1 = frame1[7:19]
+        root_rot0 = [root_rot0[3], root_rot0[0], root_rot0[1], root_rot0[2]]
+        root_rot1 = [root_rot1[3], root_rot1[0], root_rot1[1], root_rot1[2]]
+        
+        root_vel = (root_pos1 - root_pos0) / dt
+        root_rot_diff = quat.qmult(root_rot1, quat.qconjugate(root_rot0))
+        root_rot_diff_axis, root_rot_diff_angle = quat.quat2axangle(root_rot_diff)
+        root_ang_vel = (root_rot_diff_angle / dt) * root_rot_diff_axis
+        joints_vel = (joints1 - joints0) / dt
+        curr_frame_vel = np.concatenate((root_vel, root_ang_vel, joints_vel))
+        frames_vels.append(curr_frame_vel)
+
+    # replicate the velocity at the last frame
+    if num_frames > 1:
+        frames_vels.append(frames_vels[-1])
+
+    frames_vels = np.array(frames_vels)
+    print("Original frame velocity shape", frames_vels.shape)
+    
+    targetDuration = 0.05
     print("targetDuration: ", targetDuration)
+    
+    # Interpolation
     interpolated_idx = 0
     interp_frames = []
+    interp_frames_vels = []
     for i in range(frames.shape[0]-1):
         if interpolated_idx * targetDuration >= frameDuration * i \
             and interpolated_idx * targetDuration <= frameDuration * (i+1):
             frame0, frame1 = frames[i], frames[i+1]
+            frame_vel0, frame_vel1 = frames_vels[i], frames_vels[i+1]
             
             blend = (interpolated_idx * targetDuration - frameDuration * i) / frameDuration
 
@@ -49,10 +86,17 @@ if __name__ == "__main__":
             blend_root_pos = (1.0 - blend) * root_pos0 + blend * root_pos1
             blend_joints = (1.0 - blend) * joints0 + blend * joints1
             interp_frames.append(np.hstack((blend_root_pos, interp_rots.as_quat(), blend_joints)))
+            
+            blend_frame_vel = (1.0 - blend) * frame_vel0 + blend * frame_vel1
+            interp_frames_vels.append(blend_frame_vel)
             interpolated_idx += 1
+
     interp_frames = np.array(interp_frames)
-    print("Interpolated shape: ", interp_frames.shape)
+    print("Interpolated frame shape: ", interp_frames.shape)
+    interp_frames_vels = np.array(interp_frames_vels)
+    print("Interpolated frame shape: ", interp_frames_vels.shape)
     
+    # rollout
     with open('a1_mjcf.txt', 'r') as file:
         config = file.read()
 
@@ -63,8 +107,8 @@ if __name__ == "__main__":
 
     rng = jax.random.PRNGKey(seed=1)
     rollout = []
-    for frame in interp_frames:
-        state = jit_env_reset(m, frame, jp.zeros(m.qd_size()))
+    for frame, frame_vel in zip(interp_frames, interp_frames_vels):
+        state = jit_env_reset(m, frame, frame_vel)
         rollout.append(state)
     
     # serialize data, positional:

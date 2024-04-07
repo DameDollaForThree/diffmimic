@@ -1,4 +1,4 @@
-num_envs: 96
+num_envs: 95
 num_eval_envs: 32
 lr: 0.0003
 max_it: 1000
@@ -8,7 +8,7 @@ demo_replay_mode: threshold
 threshold: 0.4
 normalize_observations: True
 cycle_len: 44
-ep_len: 25
+ep_len: 30
 ep_len_eval: 44
 use_lr_scheduler: True
 reward_scaling: 0.02
@@ -16,5 +16,10 @@ rot_weight: 0.5
 vel_weight: 0.01
 ang_weight: 0.01
 n_frames: 25
+# obs_type: joint
+# root_pos_xy_weight: 0.1
+# root_pos_z_weight: 0.5
+# root_ori_weight: 0.1
+# joint_weight: 0.5
 
 ref: data/demo_a1/jump_backward_flip_20Hz.npy # (44, 739)

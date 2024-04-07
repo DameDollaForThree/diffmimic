@@ -11,7 +11,8 @@ class A1Mimic(base.PipelineEnv):
     """Trains an A1 to mimic reference motion."""
 
     def __init__(self, reference_traj, obs_type='timestamp', cyc_len=None, reward_scaling=1.,
-                 rot_weight=1., vel_weight=0., ang_weight=0., n_frames=10):
+                 rot_weight=1., vel_weight=0., ang_weight=0., n_frames=10, 
+                 root_pos_xy_weight=0., root_pos_z_weight=0., root_ori_weight=0., joint_weight=0.):
         path = '/data/benny_cai/diffmimic/diffmimic/mimic_envs/system_configs'
         with open(path + '/a1_mjcf.txt', 'r') as file:
             config = file.read()
@@ -26,6 +27,10 @@ class A1Mimic(base.PipelineEnv):
         self.rot_weight = rot_weight
         self.vel_weight = vel_weight
         self.ang_weight = ang_weight
+        # self.root_pos_xy_weight = root_pos_xy_weight
+        # self.root_pos_z_weight = root_pos_z_weight
+        # self.root_ori_weight = root_ori_weight
+        # self.joint_weight = joint_weight
 
     def reset(self, rng: jp.ndarray) -> base.State:
         """Resets the environment to an initial state."""
@@ -46,6 +51,10 @@ class A1Mimic(base.PipelineEnv):
                        self.rot_weight * mse_rot(qp, ref_qp) +
                        self.vel_weight * mse_vel(qp, ref_qp) +
                        self.ang_weight * mse_ang(qp, ref_qp)
+                    #    + self.root_pos_xy_weight * mse_root_pos_xy(qp, ref_qp)
+                    #    + self.root_pos_z_weight * mse_root_pos_z(qp, ref_qp)
+                    #    + self.root_ori_weight * mse_root_ori(qp, ref_qp)
+                    #    + self.joint_weight * mse_joint(qp, ref_qp)
                        ) * self.reward_scaling
         # TODO: fall: below 0.3 or above 1
         fall = jp.where(qp.x_i.pos[0, 2] < 0.3, jp.float32(1), jp.float32(0))
@@ -75,6 +84,10 @@ class A1Mimic(base.PipelineEnv):
             obs = jp.concatenate([pos.reshape(-1), rot.reshape(-1), vel.reshape(-1), ang.reshape(-1),
                                   target_pos.reshape(-1), target_rot_6d.reshape(-1), target_vel.reshape(-1), target_ang.reshape(-1)
                                   ], axis=-1)
+        # elif self.obs_type == 'joint':
+        #     phi = (step_index % self.cycle_len) / self.cycle_len
+        #     obs = jp.concatenate([rel_pos.reshape(-1), rot_6d.reshape(-1), vel.reshape(-1), ang.reshape(-1), qp.q, qp.qd,
+        #                             phi[None]], axis=-1)
         else:
             raise NotImplementedError
         return obs

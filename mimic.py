@@ -49,6 +49,10 @@ def main(argv):
         vel_weight=args.vel_weight,
         ang_weight=args.ang_weight,
         n_frames=args.n_frames
+        # root_pos_xy_weight=args.root_pos_xy_weight,
+        # root_pos_z_weight=args.root_pos_z_weight,
+        # root_ori_weight=args.root_ori_weight,
+        # joint_weight=args.joint_weight
     )
 
     eval_env = envs.get_environment(
@@ -60,6 +64,10 @@ def main(argv):
         vel_weight=args.vel_weight,
         ang_weight=args.ang_weight,
         n_frames=args.n_frames
+        # root_pos_xy_weight=args.root_pos_xy_weight,
+        # root_pos_z_weight=args.root_pos_z_weight,
+        # root_ori_weight=args.root_ori_weight,
+        # joint_weight=args.joint_weight
     )
 
     with metrics.Writer(logdir) as writer:

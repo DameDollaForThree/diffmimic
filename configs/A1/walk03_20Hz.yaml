@@ -1,10 +1,10 @@
-num_envs: 64
+num_envs: 90
 num_eval_envs: 32
 lr: 0.0003
 max_it: 1000
 max_grad_norm: 0.4
 seed: 0
-demo_replay_mode: threshold
+demo_replay_mode: random
 threshold: 0.4
 normalize_observations: True
 cycle_len: 14 # 115/8
