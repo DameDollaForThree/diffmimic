@@ -53,7 +53,7 @@ if __name__ == "__main__":
     frames_vels = np.array(frames_vels)
     print("Original frame velocity shape", frames_vels.shape)
     
-    targetDuration = 0.05
+    targetDuration = 0.02
     print("targetDuration: ", targetDuration)
     
     # Interpolation

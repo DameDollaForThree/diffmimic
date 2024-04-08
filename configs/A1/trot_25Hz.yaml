@@ -7,14 +7,14 @@ seed: 0
 demo_replay_mode: random
 threshold: 0.4
 normalize_observations: True
-cycle_len: 54
-ep_len: 30
-ep_len_eval: 54
+cycle_len: 20
+ep_len: 20
+ep_len_eval: 20
 use_lr_scheduler: True
 reward_scaling: 0.02
 rot_weight: 0.5
 vel_weight: 0.01
 ang_weight: 0.01
-n_frames: 25
+n_frames: 20
 
-ref: data/demo_a1/trot_0.05.npy
+ref: data/demo_a1/trot_25Hz.npy # (17, 739)
