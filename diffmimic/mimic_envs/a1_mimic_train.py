@@ -22,7 +22,8 @@ class A1MimicTrain(A1Mimic):
         reward, done, zero = jp.zeros(3)
         step_index = jp.randint(rng, high=self.total_length-self.rollout_length+1)   # random state initialization (RSI)
         qp = self._get_ref_state(step_index)
-        metrics = {'step_index': step_index, 'pose_error': zero, 'fall': zero}
+        metrics = {'step_index': step_index, 'pose_error': zero, 'fall': zero, 'thres_error': zero, 'mse_pos': zero, 'mse_rot': zero, 
+                   'mse_vel': zero, 'mse_ang': zero, 'mse_root_pos_xy': zero, 'mse_root_pos_z': zero, 'mse_root_ori': zero, 'mse_joint': zero}
         obs = self._get_obs(qp, step_index=step_index)
         state = base.State(qp, obs, reward, done, metrics)
         if self.demo_replay_mode != 'none':

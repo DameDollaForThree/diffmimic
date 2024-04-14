@@ -11,7 +11,7 @@ class A1Mimic(base.PipelineEnv):
     """Trains an A1 to mimic reference motion."""
 
     def __init__(self, reference_traj, obs_type='timestamp', cyc_len=None, reward_scaling=1.,
-                 rot_weight=1., vel_weight=0., ang_weight=0., n_frames=10, 
+                 pos_weight=1., rot_weight=1., vel_weight=0., ang_weight=0., n_frames=10, 
                  root_pos_xy_weight=0., root_pos_z_weight=0., root_ori_weight=0., joint_weight=0.):
         path = '/data/benny_cai/diffmimic/diffmimic/mimic_envs/system_configs'
         with open(path + '/a1_mjcf.txt', 'r') as file:
@@ -24,6 +24,7 @@ class A1Mimic(base.PipelineEnv):
         self.reward_scaling = reward_scaling
         self.obs_type = obs_type
         self.cycle_len = cyc_len if cyc_len is not None else self.reference_len
+        self.pos_weight = pos_weight
         self.rot_weight = rot_weight
         self.vel_weight = vel_weight
         self.ang_weight = ang_weight
@@ -36,7 +37,8 @@ class A1Mimic(base.PipelineEnv):
         """Resets the environment to an initial state."""
         reward, done, zero = jp.zeros(3)
         qp = self._get_ref_state(zero) # retrieve the 1st ref state
-        metrics = {'step_index': zero, 'pose_error': zero, 'fall': zero}
+        metrics = {'step_index': zero, 'pose_error': zero, 'fall': zero, 'thres_error': zero, 'mse_pos': zero, 'mse_rot': zero, 
+                   'mse_vel': zero, 'mse_ang': zero, 'mse_root_pos_xy': zero, 'mse_root_pos_z': zero, 'mse_root_ori': zero, 'mse_joint': zero}
         obs = self._get_obs(qp, step_index=zero)
         state = base.State(qp, obs, reward, done, metrics)
         return state
@@ -44,10 +46,16 @@ class A1Mimic(base.PipelineEnv):
     def step(self, state: base.State, action: jp.ndarray) -> base.State:
         """Run one timestep of the environment's dynamics."""
         step_index = state.metrics['step_index'] + 1
-        qp = super().pipeline_step(state.pipeline_state, action)
+        
+        # Scale action from [-1,1] to actuator limits
+        action_min = self.sys.actuator.ctrl_range[:, 0]
+        action_max = self.sys.actuator.ctrl_range[:, 1]
+        action = (action + 1) * (action_max - action_min) * 0.5 + action_min
+
+        qp = self.pipeline_step(state.pipeline_state, action)
         obs = self._get_obs(qp, step_index)
         ref_qp = self._get_ref_state(step_idx=step_index) # retrieve the next ref state
-        reward = -1 * (mse_pos(qp, ref_qp) +
+        reward = -1 * (self.pos_weight * mse_pos(qp, ref_qp) +
                        self.rot_weight * mse_rot(qp, ref_qp) +
                        self.vel_weight * mse_vel(qp, ref_qp) +
                        self.ang_weight * mse_ang(qp, ref_qp)
@@ -63,6 +71,15 @@ class A1Mimic(base.PipelineEnv):
             step_index=step_index,
             pose_error=loss_l2_relpos(qp, ref_qp),
             fall=fall,
+            mse_pos=mse_pos(qp, ref_qp),
+            mse_rot=mse_rot(qp, ref_qp),
+            mse_vel=mse_vel(qp, ref_qp),
+            mse_ang=mse_ang(qp, ref_qp),
+            mse_root_pos_xy=mse_root_pos_xy(qp, ref_qp),
+            mse_root_pos_z=mse_root_pos_z(qp, ref_qp),
+            mse_root_ori=mse_root_ori(qp, ref_qp),
+            mse_joint=mse_joint(qp, ref_qp),
+            thres_error=loss_l2_pos(qp, ref_qp)
         )
         state = state.replace(pipeline_state=qp, obs=obs, reward=reward)
         return state
