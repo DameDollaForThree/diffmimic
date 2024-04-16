@@ -1,5 +1,6 @@
 import brax
 from brax.v1 import jumpy as jp
+import numpy as np
 from brax.envs import base
 from brax.io import mjcf
 from diffmimic.utils.io import deserialize_qp
@@ -14,9 +15,11 @@ class A1Mimic(base.PipelineEnv):
                  pos_weight=1., rot_weight=1., vel_weight=0., ang_weight=0., n_frames=10, 
                  root_pos_xy_weight=0., root_pos_z_weight=0., root_ori_weight=0., joint_weight=0.):
         path = '/data/benny_cai/diffmimic/diffmimic/mimic_envs/system_configs'
-        with open(path + '/a1_mjcf.txt', 'r') as file:
+        with open(path + '/a1_mjcf.xml', 'r') as file:
             config = file.read()
         self.sys = mjcf.loads(config, asset_path=path)
+        force_range = np.full((12, 2), [-50.0, 50.0], dtype=np.float32) # change the force range
+        self.sys = self.sys.replace(actuator=self.sys.actuator.replace(force_range=force_range))
         backend = 'positional'
         super().__init__(sys=self.sys, backend=backend, n_frames=n_frames)
         self.reference_qp = deserialize_qp(reference_traj)
@@ -64,8 +67,8 @@ class A1Mimic(base.PipelineEnv):
                     #    + self.root_ori_weight * mse_root_ori(qp, ref_qp)
                     #    + self.joint_weight * mse_joint(qp, ref_qp)
                        ) * self.reward_scaling
-        # TODO: fall: below 0.3 or above 1
-        fall = jp.where(qp.x_i.pos[0, 2] < 0.3, jp.float32(1), jp.float32(0))
+        # TODO: fall: below 0.1 or above 1
+        fall = jp.where(qp.x_i.pos[0, 2] < 0.1, jp.float32(1), jp.float32(0))
         fall = jp.where(qp.x_i.pos[0, 2] > 1, jp.float32(1), fall)
         state.metrics.update(
             step_index=step_index,

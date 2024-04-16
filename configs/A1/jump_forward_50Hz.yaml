@@ -1,4 +1,4 @@
-num_envs: 64
+num_envs: 62
 num_eval_envs: 32
 lr: 0.0003
 max_it: 500
@@ -7,20 +7,16 @@ seed: 0
 demo_replay_mode: threshold
 threshold: 0.2
 normalize_observations: True
-cycle_len: 108
-ep_len: 75
-ep_len_eval: 108
+cycle_len: 66
+ep_len: 66
+ep_len_eval: 66
 use_lr_scheduler: True
 reward_scaling: 0.02
 pos_weight: 1
 rot_weight: 0.5
 vel_weight: 0.01
 ang_weight: 0.01
-n_frames: 15
-# obs_type: joint
-# root_pos_xy_weight: 0.1
-# root_pos_z_weight: 0.5
-# root_ori_weight: 0.1
-# joint_weight: 0.5
+n_frames: 10
 
-ref: data/demo_a1/jump_backward_flip_50Hz.npy # (108, 739)
+
+ref: data/demo_a1/jump_forward_50Hz.npy # (66, 739)

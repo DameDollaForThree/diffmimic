@@ -10,7 +10,7 @@ import transforms3d.quaternions as quat
 
 
 if __name__ == "__main__":
-    motion = "jump_backward_flip"
+    motion = "jump_forward"
     file = f'a1_origin_motions/{motion}.txt'
     with open(file, 'r') as f:
         data = json.load(f)
