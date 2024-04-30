@@ -30,7 +30,7 @@ def show_rollout_traj(rollout_traj, tag):
         env_name="a1_mimic",
         reference_traj=rollout_traj,
     )
-    components.html(html.render(env.sys.replace(dt=0.002*20), rollout_qp), height=500)
+    components.html(html.render(env.sys.replace(dt=env.dt), rollout_qp), height=500)
 
 
 def main():
