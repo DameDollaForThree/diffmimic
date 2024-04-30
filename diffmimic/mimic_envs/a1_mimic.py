@@ -6,7 +6,7 @@ from brax.io import mjcf
 from diffmimic.utils.io import deserialize_qp
 from .losses import *
 from diffmimic.utils.rotation6d import quaternion_to_rotation_6d
-
+import jax
 
 class A1Mimic(base.PipelineEnv):
     """Trains an A1 to mimic reference motion."""
@@ -18,8 +18,8 @@ class A1Mimic(base.PipelineEnv):
         with open(path + '/a1_mjcf.xml', 'r') as file:
             config = file.read()
         self.sys = mjcf.loads(config, asset_path=path)
-        force_range = np.full((12, 2), [-50.0, 50.0], dtype=np.float32) # change the force range
-        self.sys = self.sys.replace(actuator=self.sys.actuator.replace(force_range=force_range))
+        bias_qd = -10 * np.ones(12, dtype=np.float32) # add D term in PD controller
+        self.sys = self.sys.replace(actuator=self.sys.actuator.replace(bias_qd=bias_qd))
         backend = 'positional'
         super().__init__(sys=self.sys, backend=backend, n_frames=n_frames)
         self.reference_qp = deserialize_qp(reference_traj)
