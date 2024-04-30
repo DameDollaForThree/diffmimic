@@ -10,7 +10,7 @@ import transforms3d.quaternions as quat
 
 
 if __name__ == "__main__":
-    motion = "jump_forward"
+    motion = "a1_retarget_motion_left_turn0"
     file = f'a1_origin_motions/{motion}.txt'
     with open(file, 'r') as f:
         data = json.load(f)
@@ -56,44 +56,52 @@ if __name__ == "__main__":
     targetDuration = 0.02
     print("targetDuration: ", targetDuration)
     
-    # Interpolation
-    interpolated_idx = 0
-    interp_frames = []
-    interp_frames_vels = []
-    for i in range(frames.shape[0]-1):
-        if interpolated_idx * targetDuration >= frameDuration * i \
-            and interpolated_idx * targetDuration <= frameDuration * (i+1):
-            frame0, frame1 = frames[i], frames[i+1]
-            frame_vel0, frame_vel1 = frames_vels[i], frames_vels[i+1]
-            
-            blend = (interpolated_idx * targetDuration - frameDuration * i) / frameDuration
+    if targetDuration == frameDuration:
+        interp_frames = frames
+        interp_frames_vels = frames_vels
+        for i in range(interp_frames.shape[0]): 
+            interp_frames[i,3], interp_frames[i,4], interp_frames[i,5], interp_frames[i,6] = \
+                interp_frames[i,6], interp_frames[i,3], interp_frames[i,4], interp_frames[i,5]
+    else:
+        # Interpolation
+        interpolated_idx = 0
+        interp_frames = []
+        interp_frames_vels = []
+        for i in range(frames.shape[0]-1):
+            if interpolated_idx * targetDuration >= frameDuration * i \
+                and interpolated_idx * targetDuration <= frameDuration * (i+1):
+                frame0, frame1 = frames[i], frames[i+1]
+                frame_vel0, frame_vel1 = frames_vels[i], frames_vels[i+1]
+                
+                blend = (interpolated_idx * targetDuration - frameDuration * i) / frameDuration
 
-            root_pos0 = frame0[0:3]
-            root_pos1 = frame1[0:3]
-            root_rot0 = frame0[3:7]
-            root_rot1 = frame1[3:7]
-            joints0 = frame0[7:19]
-            joints1 = frame1[7:19]
+                root_pos0 = frame0[0:3]
+                root_pos1 = frame1[0:3]
+                root_rot0 = frame0[3:7]
+                root_rot1 = frame1[3:7]
+                joints0 = frame0[7:19]
+                joints1 = frame1[7:19]
 
-            quats = [root_rot0, root_rot1]
-            quats = [[quat[3], quat[0], quat[1], quat[2]] for quat in quats]
-            key_rots = R.from_quat(quats)
-            key_times = [frameDuration * i, frameDuration * (i+1)]
-            slerp = Slerp(key_times, key_rots)
-            time = interpolated_idx * targetDuration
-            interp_rots = slerp(time)
-            
-            blend_root_pos = (1.0 - blend) * root_pos0 + blend * root_pos1
-            blend_joints = (1.0 - blend) * joints0 + blend * joints1
-            interp_frames.append(np.hstack((blend_root_pos, interp_rots.as_quat(), blend_joints)))
-            
-            blend_frame_vel = (1.0 - blend) * frame_vel0 + blend * frame_vel1
-            interp_frames_vels.append(blend_frame_vel)
-            interpolated_idx += 1
+                quats = [root_rot0, root_rot1]
+                quats = [[quat[3], quat[0], quat[1], quat[2]] for quat in quats]
+                key_rots = R.from_quat(quats)
+                key_times = [frameDuration * i, frameDuration * (i+1)]
+                slerp = Slerp(key_times, key_rots)
+                time = interpolated_idx * targetDuration
+                interp_rots = slerp(time)
+                
+                blend_root_pos = (1.0 - blend) * root_pos0 + blend * root_pos1
+                blend_joints = (1.0 - blend) * joints0 + blend * joints1
+                interp_frames.append(np.hstack((blend_root_pos, interp_rots.as_quat(), blend_joints)))
+                
+                blend_frame_vel = (1.0 - blend) * frame_vel0 + blend * frame_vel1
+                interp_frames_vels.append(blend_frame_vel)
+                interpolated_idx += 1
 
-    interp_frames = np.array(interp_frames)
+        interp_frames = np.array(interp_frames)
+        interp_frames_vels = np.array(interp_frames_vels)
+         
     print("Interpolated frame shape: ", interp_frames.shape)
-    interp_frames_vels = np.array(interp_frames_vels)
     print("Interpolated frame shape: ", interp_frames_vels.shape)
     
     # rollout
@@ -139,4 +147,5 @@ if __name__ == "__main__":
         
     data = np.array(data)
     print("data shape: ", data.shape)
+    print("save to: ", f'a1_ref_motion/{motion}_{int(1/targetDuration)}Hz.npy')
     np.save(f'a1_ref_motion/{motion}_{int(1/targetDuration)}Hz.npy', data)
