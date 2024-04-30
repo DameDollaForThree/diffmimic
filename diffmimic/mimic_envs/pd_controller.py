@@ -4,6 +4,7 @@ from brax import jumpy as jp
 from brax.physics.base import P, QP
 from brax.physics.actuators import Angle
 
+import jax
 
 def compute_pd_control(target_angles, current_angles, current_velocities, Kp, Kd):
     error = target_angles - current_angles
@@ -17,10 +18,13 @@ def apply_reduced(self, act: jp.ndarray, qp_p: QP, qp_c: QP) -> Tuple[P, P]:
   vel = tuple([jp.dot(qp_c.ang - qp_p.ang, ax) for ax in axis])
   axis, angle, vel = jp.array(axis), jp.array(angle), jp.array(vel)
 
+  # jax.debug.print("act: {}", act)
   target_angles = act * jp.pi * 1.2
-
+  # jax.debug.print("target_angles: {}", target_angles)
   torque = compute_pd_control(target_angles, angle, vel, Kp=self.strength, Kd=self.strength/10)
+  # jax.debug.print("control_output: {}", torque)
   torque = jp.sum(jp.vmap(jp.multiply)(axis, torque), axis=0)
+  # jax.debug.print("torque: {}", torque)
 
   dang_p = -self.joint.body_p.inertia * torque
   dang_c = self.joint.body_c.inertia * torque
