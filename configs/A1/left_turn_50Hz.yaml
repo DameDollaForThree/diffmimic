@@ -1,3 +1,4 @@
+ref: data/demo_a1/left_turn_50Hz.npy # (39, 739)
 num_envs: 32
 num_eval_envs: 32
 lr: 0.0003
@@ -5,7 +6,7 @@ max_it: 500
 max_grad_norm: 0.4
 seed: 0
 demo_replay_mode: threshold
-threshold: 0.2
+threshold: 0.4
 normalize_observations: True
 cycle_len: 39
 ep_len: 39
@@ -16,6 +17,4 @@ pos_weight: 1
 rot_weight: 0.5
 vel_weight: 0.01
 ang_weight: 0.01
-n_frames: 10
-
-ref: data/demo_a1/left_turn_50Hz.npy # (39, 739)
+n_frames: 15

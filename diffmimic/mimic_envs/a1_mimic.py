@@ -18,8 +18,8 @@ class A1Mimic(base.PipelineEnv):
         with open(path + '/a1_mjcf.xml', 'r') as file:
             config = file.read()
         self.sys = mjcf.loads(config, asset_path=path)
-        # bias_qd = -10 * np.ones(12, dtype=np.float32) # add D term in PD controller
-        # self.sys = self.sys.replace(actuator=self.sys.actuator.replace(bias_qd=bias_qd))
+        bias_qd = -10 * np.ones(12, dtype=np.float32) # add D term in PD controller
+        self.sys = self.sys.replace(actuator=self.sys.actuator.replace(bias_qd=bias_qd))
         backend = 'positional'
         super().__init__(sys=self.sys, backend=backend, n_frames=n_frames)
         self.reference_qp = deserialize_qp(reference_traj)

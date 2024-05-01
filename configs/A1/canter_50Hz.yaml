@@ -1,4 +1,4 @@
-num_envs: 32
+num_envs: 64
 num_eval_envs: 32
 lr: 0.0003
 max_it: 500
@@ -16,6 +16,6 @@ pos_weight: 1
 rot_weight: 0.5
 vel_weight: 0.01
 ang_weight: 0.01
-n_frames: 10
+n_frames: 15
 
 ref: data/demo_a1/canter_50Hz.npy # (29, 739)
