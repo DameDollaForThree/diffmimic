@@ -1,6 +1,6 @@
 ref: data/demo_a1/jump_forward_50Hz.npy # (66, 739)
-num_envs: 64
-num_eval_envs: 32
+num_envs: 72
+num_eval_envs: 10
 lr: 0.0003
 max_it: 500
 max_grad_norm: 0.4

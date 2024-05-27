@@ -113,7 +113,7 @@ def train(environment: envs.Env,
       preprocess_observations_fn=normalize)
   make_policy = apg_networks.make_inference_fn(apg_network)
   if use_linear_scheduler:
-      lr_scheduler = optax.linear_schedule(init_value=learning_rate, end_value=1e-5, transition_steps=num_evals_after_init)
+      lr_scheduler = optax.linear_schedule(init_value=learning_rate, end_value=5e-5, transition_steps=num_evals_after_init)
       optimizer = optax.adam(learning_rate=lr_scheduler)
   else:
       optimizer = optax.adam(learning_rate=learning_rate)
