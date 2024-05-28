@@ -58,10 +58,15 @@ class A1Mimic(base.PipelineEnv):
         qp = self.pipeline_step(state.pipeline_state, action)
         obs = self._get_obs(qp, step_index)
         ref_qp = self._get_ref_state(step_idx=step_index) # retrieve the next ref state
-        reward = jp.exp(-self.pos_weight * mse_pos(qp, ref_qp)) * \
-                jp.exp(-self.rot_weight * mse_rot(qp, ref_qp)) * \
-                jp.exp(-self.vel_weight * mse_vel(qp, ref_qp)) * \
-                jp.exp(-self.ang_weight * mse_ang(qp, ref_qp))
+        reward = -1 * (self.pos_weight * mse_pos(qp, ref_qp) +
+                       self.rot_weight * mse_rot(qp, ref_qp) +
+                       self.vel_weight * mse_vel(qp, ref_qp) +
+                       self.ang_weight * mse_ang(qp, ref_qp)
+                    #    + self.root_pos_xy_weight * mse_root_pos_xy(qp, ref_qp)
+                    #    + self.root_pos_z_weight * mse_root_pos_z(qp, ref_qp)
+                    #    + self.root_ori_weight * mse_root_ori(qp, ref_qp)
+                    #    + self.joint_weight * mse_joint(qp, ref_qp)
+                       ) * self.reward_scaling
 
         # TODO: fall: below 0.1 or above 1
         fall = jp.where(qp.x_i.pos[0, 2] < 0.1, jp.float32(1), jp.float32(0))

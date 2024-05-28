@@ -1,5 +1,5 @@
 ref: data/demo_a1/jump_forward_50Hz.npy # (66, 739)
-num_envs: 72
+num_envs: 70
 num_eval_envs: 10
 lr: 0.0003
 max_it: 500
@@ -12,9 +12,10 @@ cycle_len: 66
 ep_len: 66
 ep_len_eval: 66
 use_lr_scheduler: True
-reward_scaling: 0.02
+reward_scaling: 0.1
 pos_weight: 1
 rot_weight: 0.5
 vel_weight: 0.01
 ang_weight: 0.01
 n_frames: 10
+# truncation_length: 10
